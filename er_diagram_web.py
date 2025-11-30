@@ -285,24 +285,27 @@ class ERDiagramWebEditor:
                     else:
                         other_columns.append(col_display)
                 
-                label_parts = [f"<b>{table_name}</b>"]
+                label_parts = [f"<div style='font-weight:bold; font-size:10px; padding:4px 2px; background:#2c3e50; color:white; text-align:center;'>{table_name}</div>"]
                 
                 if pk_columns:
-                    label_parts.append("<hr style='margin:2px 0; border:0; border-top:1px solid #333;'>")
-                    label_parts.append("<b style='color:#d32f2f;'>PK</b>")
-                    label_parts.extend(pk_columns)
+                    label_parts.append("<div style='border-top:2px solid #d32f2f; margin:2px 0;'></div>")
+                    label_parts.append("<div style='color:#d32f2f; font-weight:bold; font-size:8px; padding:2px;'>PK</div>")
+                    for col in pk_columns:
+                        label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
                 
                 if fk_columns:
-                    label_parts.append("<hr style='margin:2px 0; border:0; border-top:1px solid #666;'>")
-                    label_parts.append("<b style='color:#1976d2;'>FK</b>")
-                    label_parts.extend(fk_columns)
+                    label_parts.append("<div style='border-top:1px solid #1976d2; margin:2px 0;'></div>")
+                    label_parts.append("<div style='color:#1976d2; font-weight:bold; font-size:8px; padding:2px;'>FK</div>")
+                    for col in fk_columns:
+                        label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
                 
                 if other_columns:
                     if pk_columns or fk_columns:
-                        label_parts.append("<hr style='margin:2px 0; border:0; border-top:1px solid #999;'>")
-                    label_parts.extend(other_columns)
+                        label_parts.append("<div style='border-top:1px solid #999; margin:2px 0;'></div>")
+                    for col in other_columns:
+                        label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
                 
-                label = "<br>".join(label_parts)
+                label = "".join(label_parts)
                 
                 node_color = {
                     'background': '#fff3e0' if table_name == center else '#e3f2fd',
@@ -382,24 +385,27 @@ class ERDiagramWebEditor:
                 else:
                     other_columns.append(col_display)
             
-            label_parts = [f"<b>{table_name}</b>"]
+            label_parts = [f"<div style='font-weight:bold; font-size:10px; padding:4px 2px; background:#757575; color:white; text-align:center;'>{table_name}</div>"]
             
             if pk_columns:
-                label_parts.append("<hr style='margin:2px 0; border:0; border-top:1px solid #333;'>")
-                label_parts.append("<b style='color:#d32f2f;'>PK</b>")
-                label_parts.extend(pk_columns)
+                label_parts.append("<div style='border-top:2px solid #d32f2f; margin:2px 0;'></div>")
+                label_parts.append("<div style='color:#d32f2f; font-weight:bold; font-size:8px; padding:2px;'>PK</div>")
+                for col in pk_columns:
+                    label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
             
             if fk_columns:
-                label_parts.append("<hr style='margin:2px 0; border:0; border-top:1px solid #666;'>")
-                label_parts.append("<b style='color:#1976d2;'>FK</b>")
-                label_parts.extend(fk_columns)
+                label_parts.append("<div style='border-top:1px solid #1976d2; margin:2px 0;'></div>")
+                label_parts.append("<div style='color:#1976d2; font-weight:bold; font-size:8px; padding:2px;'>FK</div>")
+                for col in fk_columns:
+                    label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
             
             if other_columns:
                 if pk_columns or fk_columns:
-                    label_parts.append("<hr style='margin:2px 0; border:0; border-top:1px solid #999;'>")
-                label_parts.extend(other_columns)
+                    label_parts.append("<div style='border-top:1px solid #999; margin:2px 0;'></div>")
+                for col in other_columns:
+                    label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
             
-            label = "<br>".join(label_parts)
+            label = "".join(label_parts)
             
             node = {
                 'id': table_name,
@@ -521,6 +527,13 @@ class ERDiagramWebEditor:
             margin-left: auto;
             color: #666;
             font-size: 12px;
+        }}
+        /* vis.js 노드 내부 스타일 */
+        .vis-network .vis-node {{
+            font-family: '맑은 고딕', Arial, sans-serif;
+        }}
+        .vis-network .vis-node .vis-label {{
+            font-family: '맑은 고딕', Arial, sans-serif;
         }}
     </style>
 </head>
