@@ -98,6 +98,16 @@ class ERDiagramWebEditor:
         
         return layers
     
+    def is_parent_table(self, table_name, graph):
+        """테이블이 다른 테이블의 부모(참조 대상)인지 확인"""
+        for other_table, table_info in self.tables_info.items():
+            if other_table == table_name:
+                continue
+            for fk in table_info.get('foreign_keys', []):
+                if fk['referred_table'] == table_name:
+                    return True
+        return False
+    
     def calculate_table_size(self, table_info):
         max_col_name_len = max([len(col['name']) for col in table_info['columns']], default=0)
         max_type_len = max([len(str(col['type']).split('(')[0].split('[')[0]) for col in table_info['columns']], default=0)
