@@ -285,25 +285,33 @@ class ERDiagramWebEditor:
                     else:
                         other_columns.append(col_display)
                 
-                label_parts = [f"<div style='font-weight:bold; font-size:10px; padding:4px 2px; background:#2c3e50; color:white; text-align:center;'>{table_name}</div>"]
+                # HTML 형식으로 라벨 생성 (이스케이프 없이)
+                label_parts = []
+                
+                # 테이블 이름 헤더
+                header_style = "font-weight:bold;font-size:10px;padding:4px 2px;background:#2c3e50;color:white;text-align:center;"
+                label_parts.append(f"<div style='{header_style}'>{table_name}</div>")
                 
                 if pk_columns:
-                    label_parts.append("<div style='border-top:2px solid #d32f2f; margin:2px 0;'></div>")
-                    label_parts.append("<div style='color:#d32f2f; font-weight:bold; font-size:8px; padding:2px;'>PK</div>")
+                    label_parts.append("<div style='border-top:2px solid #d32f2f;margin:2px 0;'></div>")
+                    label_parts.append("<div style='color:#d32f2f;font-weight:bold;font-size:8px;padding:2px;'>PK</div>")
                     for col in pk_columns:
-                        label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
+                        col_escaped = col.replace("'", "&#39;").replace('"', "&quot;")
+                        label_parts.append(f"<div style='font-size:8px;padding:1px 4px;'>{col_escaped}</div>")
                 
                 if fk_columns:
-                    label_parts.append("<div style='border-top:1px solid #1976d2; margin:2px 0;'></div>")
-                    label_parts.append("<div style='color:#1976d2; font-weight:bold; font-size:8px; padding:2px;'>FK</div>")
+                    label_parts.append("<div style='border-top:1px solid #1976d2;margin:2px 0;'></div>")
+                    label_parts.append("<div style='color:#1976d2;font-weight:bold;font-size:8px;padding:2px;'>FK</div>")
                     for col in fk_columns:
-                        label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
+                        col_escaped = col.replace("'", "&#39;").replace('"', "&quot;")
+                        label_parts.append(f"<div style='font-size:8px;padding:1px 4px;'>{col_escaped}</div>")
                 
                 if other_columns:
                     if pk_columns or fk_columns:
-                        label_parts.append("<div style='border-top:1px solid #999; margin:2px 0;'></div>")
+                        label_parts.append("<div style='border-top:1px solid #999;margin:2px 0;'></div>")
                     for col in other_columns:
-                        label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
+                        col_escaped = col.replace("'", "&#39;").replace('"', "&quot;")
+                        label_parts.append(f"<div style='font-size:8px;padding:1px 4px;'>{col_escaped}</div>")
                 
                 label = "".join(label_parts)
                 
@@ -385,25 +393,33 @@ class ERDiagramWebEditor:
                 else:
                     other_columns.append(col_display)
             
-            label_parts = [f"<div style='font-weight:bold; font-size:10px; padding:4px 2px; background:#757575; color:white; text-align:center;'>{table_name}</div>"]
+            # HTML 형식으로 라벨 생성 (이스케이프 없이)
+            label_parts = []
+            
+            # 테이블 이름 헤더
+            header_style = "font-weight:bold;font-size:10px;padding:4px 2px;background:#757575;color:white;text-align:center;"
+            label_parts.append(f"<div style='{header_style}'>{table_name}</div>")
             
             if pk_columns:
-                label_parts.append("<div style='border-top:2px solid #d32f2f; margin:2px 0;'></div>")
-                label_parts.append("<div style='color:#d32f2f; font-weight:bold; font-size:8px; padding:2px;'>PK</div>")
+                label_parts.append("<div style='border-top:2px solid #d32f2f;margin:2px 0;'></div>")
+                label_parts.append("<div style='color:#d32f2f;font-weight:bold;font-size:8px;padding:2px;'>PK</div>")
                 for col in pk_columns:
-                    label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
+                    col_escaped = col.replace("'", "&#39;").replace('"', "&quot;")
+                    label_parts.append(f"<div style='font-size:8px;padding:1px 4px;'>{col_escaped}</div>")
             
             if fk_columns:
-                label_parts.append("<div style='border-top:1px solid #1976d2; margin:2px 0;'></div>")
-                label_parts.append("<div style='color:#1976d2; font-weight:bold; font-size:8px; padding:2px;'>FK</div>")
+                label_parts.append("<div style='border-top:1px solid #1976d2;margin:2px 0;'></div>")
+                label_parts.append("<div style='color:#1976d2;font-weight:bold;font-size:8px;padding:2px;'>FK</div>")
                 for col in fk_columns:
-                    label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
+                    col_escaped = col.replace("'", "&#39;").replace('"', "&quot;")
+                    label_parts.append(f"<div style='font-size:8px;padding:1px 4px;'>{col_escaped}</div>")
             
             if other_columns:
                 if pk_columns or fk_columns:
-                    label_parts.append("<div style='border-top:1px solid #999; margin:2px 0;'></div>")
+                    label_parts.append("<div style='border-top:1px solid #999;margin:2px 0;'></div>")
                 for col in other_columns:
-                    label_parts.append(f"<div style='font-size:8px; padding:1px 4px;'>{col}</div>")
+                    col_escaped = col.replace("'", "&#39;").replace('"', "&quot;")
+                    label_parts.append(f"<div style='font-size:8px;padding:1px 4px;'>{col_escaped}</div>")
             
             label = "".join(label_parts)
             
@@ -481,8 +497,18 @@ class ERDiagramWebEditor:
         initial_positions = visjs_data.get('initial_positions', {})
         
         initial_positions_json = json.dumps(initial_positions, ensure_ascii=False)
-        nodes_json = json.dumps(visjs_data['nodes'], ensure_ascii=False)
-        edges_json = json.dumps(visjs_data['edges'], ensure_ascii=False)
+        
+        # HTML이 제대로 렌더링되도록 노드 데이터 처리
+        nodes_data = []
+        for node in visjs_data['nodes']:
+            node_copy = node.copy()
+            # label은 이미 HTML 형식이므로 그대로 사용
+            nodes_data.append(node_copy)
+        
+        edges_data = visjs_data['edges']
+        
+        nodes_json = json.dumps(nodes_data, ensure_ascii=False)
+        edges_json = json.dumps(edges_data, ensure_ascii=False)
         
         html_content = f"""<!DOCTYPE html>
 <html lang="ko">
