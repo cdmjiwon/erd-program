@@ -115,8 +115,25 @@ class ERDiagramWebEditor:
         table_name_len = len(table_info.get('name', ''))
         num_cols = len(table_info['columns'])
         
-        width = max(300, max(max_col_name_len + max_type_len + 40, table_name_len) * 8)
-        height = 70 + (num_cols * 20)
+        # 더 정확한 크기 계산
+        content_width = max(max_col_name_len + max_type_len + 50, table_name_len + 20)
+        width = max(350, content_width * 7.5)
+        
+        # PK, FK, 일반 컬럼 섹션 고려
+        pk_count = len([c for c in table_info.get('primary_keys', [])])
+        fk_count = len([fk for fk in table_info.get('foreign_keys', [])])
+        other_count = num_cols - pk_count - fk_count
+        
+        # 섹션 구분선과 헤더 고려
+        section_headers = 0
+        if pk_count > 0:
+            section_headers += 1
+        if fk_count > 0:
+            section_headers += 1
+        if other_count > 0:
+            section_headers += 1
+        
+        height = 50 + (num_cols * 22) + (section_headers * 25) + 20
         
         return width, height
     
@@ -130,12 +147,12 @@ class ERDiagramWebEditor:
         for table_name, table_info in self.tables_info.items():
             table_sizes[table_name] = self.calculate_table_size(table_info)
         
-        x_start = 500
-        y_start = 500
-        group_spacing_x = 2000
-        group_spacing_y = 2000
-        isolated_spacing_x = 450
-        isolated_spacing_y = 400
+        x_start = 600
+        y_start = 600
+        group_spacing_x = 3000
+        group_spacing_y = 3000
+        isolated_spacing_x = 500
+        isolated_spacing_y = 450
         
         initial_positions = {}
         
@@ -174,21 +191,35 @@ class ERDiagramWebEditor:
                         num_in_layer = len(layer_nodes)
                         
                         if layer == 1:
-                            max_size = max([max(table_sizes[n]) for n in layer_nodes])
-                            radius = max(center_width, center_height) / 2 + max_size / 2 + 250
+                            # 각 노드의 실제 크기 계산
+                            node_width, node_height = table_sizes[table_name]
+                            center_size = max(center_width, center_height)
+                            node_size = max(node_width, node_height)
+                            
+                            # 충분한 간격 확보 (최소 100px 여유)
+                            radius = center_size / 2 + node_size / 2 + 350
                             
                             is_parent = self.is_parent_table(table_name, graph)
                             
+                            # 부모는 위쪽, 자식은 아래쪽 배치
                             if is_parent:
                                 y = center_y - radius
-                                angle_step = 2 * math.pi / num_in_layer if num_in_layer > 1 else 0
-                                angle = node_idx * angle_step
-                                x = center_x + radius * 0.8 * math.cos(angle)
+                                # 위쪽에 여러 개일 때 원형 배치
+                                if num_in_layer > 1:
+                                    angle_step = 2 * math.pi / num_in_layer
+                                    angle = node_idx * angle_step - math.pi / 2
+                                    x = center_x + radius * 0.9 * math.cos(angle)
+                                else:
+                                    x = center_x
                             else:
                                 y = center_y + radius
-                                angle_step = 2 * math.pi / num_in_layer if num_in_layer > 1 else 0
-                                angle = node_idx * angle_step
-                                x = center_x + radius * 0.8 * math.cos(angle)
+                                # 아래쪽에 여러 개일 때 원형 배치
+                                if num_in_layer > 1:
+                                    angle_step = 2 * math.pi / num_in_layer
+                                    angle = node_idx * angle_step + math.pi / 2
+                                    x = center_x + radius * 0.9 * math.cos(angle)
+                                else:
+                                    x = center_x
                         else:
                             prev_layer_nodes = layers[layer - 1]
                             parent_node = None
@@ -200,19 +231,26 @@ class ERDiagramWebEditor:
                             if parent_node:
                                 parent_pos = initial_positions.get(parent_node, {'x': center_x, 'y': center_y})
                                 parent_width, parent_height = table_sizes[parent_node]
+                                parent_size = max(parent_width, parent_height)
+                                node_size = max(width, height)
                                 
-                                radius = max(parent_width, parent_height) / 2 + max(width, height) / 2 + 150
+                                # 충분한 간격 확보
+                                radius = parent_size / 2 + node_size / 2 + 300
                                 
                                 siblings = [n for n in layer_nodes if n != table_name and n in graph.get(parent_node, set())]
                                 
+                                # 부모의 위치에 따라 배치 방향 결정
+                                parent_angle = math.atan2(parent_pos['y'] - center_y, parent_pos['x'] - center_x)
+                                
                                 if len(siblings) == 0:
+                                    # 부모 아래쪽에 배치
                                     angle_offset = math.pi / 2
                                 else:
+                                    # 형제들과 함께 원형 배치
                                     angle_step = 2 * math.pi / (len(siblings) + 1)
-                                    sibling_pos = siblings.index(table_name) if table_name in siblings else 0
+                                    sibling_pos = siblings.index(table_name) if table_name in siblings else node_idx
                                     angle_offset = (sibling_pos + 1) * angle_step
                                 
-                                parent_angle = math.atan2(parent_pos['y'] - center_y, parent_pos['x'] - center_x)
                                 angle = parent_angle + angle_offset
                                 
                                 x = parent_pos['x'] + radius * math.cos(angle)
@@ -599,16 +637,16 @@ class ERDiagramWebEditor:
                     enabled: true,
                     stabilization: {{
                         enabled: true,
-                        iterations: 600,
+                        iterations: 800,
                         updateInterval: 25
                     }},
                     barnesHut: {{
-                        gravitationalConstant: -6000,
+                        gravitationalConstant: -8000,
                         centralGravity: 0.01,
-                        springLength: 350,
-                        springConstant: 0.015,
-                        damping: 0.25,
-                        avoidOverlap: 1.2
+                        springLength: 500,
+                        springConstant: 0.01,
+                        damping: 0.3,
+                        avoidOverlap: 1.5
                     }}
                 }}
             }});
@@ -616,7 +654,7 @@ class ERDiagramWebEditor:
             var stabilizationTimeout = setTimeout(function() {{
                 network.setOptions({{physics: false}});
                 clearTimeout(stabilizationTimeout);
-            }}, 10000);
+            }}, 15000);
             
             network.once("stabilizationEnd", function() {{
                 clearTimeout(stabilizationTimeout);
@@ -625,10 +663,10 @@ class ERDiagramWebEditor:
             
             network.fit({{
                 animation: {{
-                    duration: 1000,
+                    duration: 1200,
                     easingFunction: 'easeInOutQuad'
                 }},
-                padding: 100
+                padding: 150
             }});
         }}
         
